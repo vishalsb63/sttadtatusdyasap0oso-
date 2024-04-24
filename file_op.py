@@ -10,7 +10,7 @@ def file_operations(csv_file_path, workbook_path, output_dir):
 
         data1=pd.read_excel(workbook_path)
 
-        filtered_data = data[data['TOPECO'].isin(['1_Portfolio', '1_Party'])]
+        filtered_data = data[data['TOPECO'].isin(['_Party', '0_Party'])]
         filtered_data = filtered_data[filtered_data['SALERID'].isnull()]
         filtered_data = filtered_data[filtered_data['CUSTOMERTYPE'] == 'noncustomer']
         filtered_data['Counterparties Type'] = np.where(filtered_data['COUNTERP_TRADEPARTYID'].isin(data1['COUNTERP_TRADEPARTYID']),'9 Large Banks without Sales id','Exchange_Broker')
@@ -176,4 +176,4 @@ def file_operations(csv_file_path, workbook_path, output_dir):
         print(f"Error processing the CSV file: {e}")
 
 
-file_operations("input.csv", "Exchange_Broker_9_large_banks_List.xlsx", "output_directory")
+file_operations("C:/Users/vbabu021524/OneDrive - GROUP DIGITAL WORKPLACE/Desktop/9banks_reports and inputs/RU151_Numerator-21-NOV-22.csv", "C:/Users/vbabu021524/OneDrive - GROUP DIGITAL WORKPLACE/Desktop/9banks_reports and inputs/9large_banks_List.xlsx", "C:/Users/vbabu021524/OneDrive - GROUP DIGITAL WORKPLACE/Desktop/9banks_reports and inputs")
