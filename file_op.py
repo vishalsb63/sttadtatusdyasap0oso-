@@ -15,6 +15,13 @@ def file_operations(csv_file_path, workbook_path, output_dir):
         filtered_data = filtered_data[filtered_data['CUSTOMERTYPE'] == 'noncustomer']
         filtered_data['Counterparties Type'] = np.where(filtered_data['COUNTERP_TRADEPARTYID'].isin(data1['COUNTERP_TRADEPARTYID']),'9 Large Banks without Sales id','Exchange_Broker')
 
+        unnique_df= filtered_data['COUNTERP_TRADEPARTYID'].unique()
+
+        bank_df_filter = filtered_data[filtered_data['Counterparties Type'] == '9 Large Banks without Sales id']
+        exch_df_filter = filtered_data[filtered_data['Counterparties Type'] == 'Exchange_Broker']
+
+        bank_df_filter
+
         filtered_data2 = data[data['TOPECO'].isin(['0_Portfolio', '_Party'])]
         
         #pivot_table_1=pd.pivot_table(data2,index='INSTRUMENT_TYPE',values='COUNTERP_TRADEPARTYID', aggfunc=lambda x: len(set(x)) if)
@@ -82,6 +89,22 @@ def file_operations(csv_file_path, workbook_path, output_dir):
                             margins_name='Grand Total')
         
         vm7_data1 = pd.DataFrame({'count': (pivot_table1['COUNTERP_TRADEPARTYID'])/ (3966) * 1,'value': (pivot_table1['ABS_EXCHANGEDAMOUNT_USD'])  / (18777438375.3192) * 1})
+
+
+        pivot_table2 = pd.pivot_table(
+                            filtered_data,
+                            values=['ABS_EXCHANGEDAMOUNT_USD', 'COUNTERP_TRADEPARTYID'],
+                            index=['Counterparties Type'],
+                            aggfunc={
+                                'ABS_EXCHANGEDAMOUNT_USD': 'sum',
+                                'COUNTERP_TRADEPARTYID': 'count'},
+                            margins=True,
+                            margins_name='Grand Total')
+        
+        vm7_data2 = pd.DataFrame({'count': (pivot_table2['COUNTERP_TRADEPARTYID'])/ (3966) * 1,'value': (pivot_table2['ABS_EXCHANGEDAMOUNT_USD'])  / (18777438375.3192) * 1})
+
+        
+
     
         
         
@@ -126,10 +149,7 @@ def file_operations(csv_file_path, workbook_path, output_dir):
             worksheet.write(1, vm7_start_col+1, 'count', workbook.add_format({'bold': True, 'bg_color': '#D7E4BC'}))
             worksheet.write(1, vm7_start_col + 2, 'value', workbook.add_format({'bold': True, 'bg_color': '#D7E4BC'}))
             
-            worksheet.merge_range(start_row-1, vm7_start_col1, start_row, vm7_start_col1 + 2, 'vm7', vm7_header_format)
-            worksheet.write(start_row, vm7_start_col1, 'Instrument Type', workbook.add_format({'bold': True, 'bg_color': '#D7E4BC'}))
-            worksheet.write(start_row, vm7_start_col1+1, 'count', workbook.add_format({'bold': True, 'bg_color': '#D7E4BC'}))
-            worksheet.write(start_row, vm7_start_col1 + 2, 'value', workbook.add_format({'bold': True, 'bg_color': '#D7E4BC'}))
+            worksheet.merge_range(start_row, vm7_start_col1, start_row, vm7_start_col1 + 2, 'vm7', vm7_header_format)
 
             
             
@@ -154,15 +174,26 @@ def file_operations(csv_file_path, workbook_path, output_dir):
                 worksheet.set_column(vm7_start_col1 + col_num, vm7_start_col1 + col_num, 18, percentage_format)
                 worksheet.set_column(vm7_start_col1 + col_num+1, vm7_start_col1 + col_num+1, 18, percentage_format)
 
+            worksheet.merge_range(start_row+20, vm7_start_col1, start_row+20, vm7_start_col1 + 2, 'vm7', vm7_header_format)
+
+
+            
+
                 
 
             
             
             pivot_table1.to_excel(writer, sheet_name='Pivot Table',startrow=start_row)
+            pivot_table2.to_excel(writer, sheet_name='Pivot Table',startrow=start_row+20)
+            vm7_data2.to_excel(writer, sheet_name='Pivot Table', startrow=start_row+21, startcol=vm7_start_col1)
 
             for col_num, value in enumerate(pivot_table1.columns.values):
                 worksheet.write(0, col_num+1, value, header_format)
-                worksheet.set_column(col_num, col_num+1, 18, number_format)
+                worksheet.set_column(col_num, col_num+1, 35, number_format)
+
+            for col_num, value in enumerate(pivot_table2.columns.values):
+                worksheet.write(0, col_num+1, value, header_format)
+                worksheet.set_column(col_num, col_num+1, 35, number_format)
 
 
             
